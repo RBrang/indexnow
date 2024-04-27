@@ -10,15 +10,22 @@ import logging
 from typing import List
 
 import requests
+import uuid
 
 logger = logging.getLogger(__name__)
 
 
 class IndexNow:
 
-    def __init__(self, key: str, host: str):
+    def __init__(self, host: str, key: str = None):
         self.key = key
         self.host = host
+
+        # Generate a key, if none given
+        if key is None:
+            self.key = self.generate_key()
+        else:
+            self.key = key
 
         # HTTP 1.1 keep-alive
         self.session = requests.Session()
@@ -47,3 +54,14 @@ class IndexNow:
         logger.error(f"IndexNow Response: {response.status_code}")
 
         return  response.status_code
+
+    def generate_key():
+        """
+        A key is just a uuid without dashes.
+        It does not need to be stored at a centralized facility,
+        so we may just generate it ourselves
+        """
+
+        uuid_str = str(uuid.uuid4()).replace("-", "")
+
+        return uuid_str
